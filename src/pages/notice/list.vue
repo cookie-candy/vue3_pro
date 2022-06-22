@@ -88,6 +88,7 @@ import {
 } from "~/api/notice";
 import FormDrawer from "~/components/FormDrawer.vue";
 import { toast } from "~/composables/util";
+import { useInitTable } from "~/composables/useCommon.js";
 
 // 定义表格数据
 const tableData = ref([]);
