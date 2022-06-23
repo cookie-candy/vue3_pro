@@ -142,7 +142,6 @@
 import { ref } from "vue";
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from "~/components/FormDrawer.vue";
-import ChooseImage from "~/components/ChooseImage.vue";
 import {
   getManagerList,
   updateManagerStatus,
