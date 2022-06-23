@@ -22,7 +22,7 @@
     </el-form>
 
     <!-- 新增|刷新 -->
-    <ListHerder @create="handleCreate" @refresh="getData" />
+    <ListHeader @create="handleCreate" @refresh="getData" />
 
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column label="管理员" width="200">
@@ -140,12 +140,9 @@
 </template>
 <script setup>
 import { ref } from "vue";
+import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from "~/components/FormDrawer.vue";
 import ChooseImage from "~/components/ChooseImage.vue";
-import ListHerder from "~/components/ListHerder.vue";
-
-import { useInitTable, useInitForm } from "~/composables/useCommon.js";
-
 import {
   getManagerList,
   updateManagerStatus,
@@ -153,6 +150,8 @@ import {
   updateManager,
   deleteManager,
 } from "~/api/manager";
+
+import { useInitTable, useInitForm } from "~/composables/useCommon.js";
 
 const roles = ref([]);
 
@@ -165,12 +164,15 @@ const {
   total,
   limit,
   getData,
+  handleDelete,
+  handleStatusChange,
 } = useInitTable({
   searchForm: {
     keyword: "",
   },
   getList: getManagerList,
   onGetListSuccess: (res) => {
+    console.log(res);
     tableData.value = res.list.map((o) => {
       o.statusLoading = false;
       return o;
@@ -178,6 +180,8 @@ const {
     total.value = res.totalCount;
     roles.value = res.roles;
   },
+  delete: deleteManager,
+  updateStatus: updateManagerStatus,
 });
 
 const {
@@ -189,8 +193,6 @@ const {
   handleSubmit,
   handleCreate,
   handleEdit,
-  handleDelete,
-  handleStatusChange,
 } = useInitForm({
   form: {
     username: "",

@@ -1,9 +1,9 @@
 <template>
   <el-card shadow="never" class="border-0">
     <!-- 新增|刷新 -->
-    <ListHerder @create="handleCreate" @refresh="getData" />
+    <ListHeader @create="handleCreate" @refresh="getData" />
 
-    <el-table :data="tableData" stripe style="width: 100%">
+    <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column prop="title" label="公告标题" />
       <el-table-column prop="create_time" label="发布时间" width="380" />
       <el-table-column label="操作" width="180" align="center">
@@ -13,7 +13,7 @@
             size="small"
             text
             @click="handleEdit(scope.row)"
-            ><el-icon><EditPen /></el-icon>修改</el-button
+            >修改</el-button
           >
 
           <el-popconfirm
@@ -23,16 +23,13 @@
             @confirm="handleDelete(scope.row.id)"
           >
             <template #reference>
-              <el-button text type="danger" size="small"
-                ><el-icon><Delete /></el-icon>删除</el-button
-              >
+              <el-button text type="primary" size="small">删除</el-button>
             </template>
           </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 分页 -->
     <div class="flex items-center justify-center mt-5">
       <el-pagination
         background
@@ -44,7 +41,7 @@
       />
     </div>
 
-    <FormDrawer ref="formDrawerRef" title="新增" @submit="handleSubmit">
+    <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
       <el-form
         :model="form"
         ref="formRef"
@@ -68,25 +65,21 @@
   </el-card>
 </template>
 <script setup>
+import ListHeader from "~/components/ListHeader.vue";
+import FormDrawer from "~/components/FormDrawer.vue";
 import {
   getNoticeList,
   createNotice,
   updateNotice,
   deleteNotice,
 } from "~/api/notice";
-import FormDrawer from "~/components/FormDrawer.vue";
-import ListHerder from "~/components/ListHerder.vue";
-
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
 
-// 表格部分
 const { tableData, loading, currentPage, total, limit, getData, handleDelete } =
   useInitTable({
     getList: getNoticeList,
     delete: deleteNotice,
   });
-
-// 表单部分
 
 const {
   formDrawerRef,

@@ -12,7 +12,6 @@
     </el-tooltip>
   </div>
 </template>
-
 <script setup>
 defineEmits(["create", "refresh"]);
 </script>

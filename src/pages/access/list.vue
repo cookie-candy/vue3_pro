@@ -23,7 +23,6 @@
               :modelValue="data.status"
               :active-value="1"
               :inactive-value="0"
-              @change="handleStatusChange($event, data)"
             />
             <el-button
               text
@@ -32,50 +31,111 @@
               @click.stop="handleEdit(data)"
               >修改</el-button
             >
-            <el-button
-              text
-              type="success"
-              size="small"
-              @click.stop="addChild(data.id)"
-              >增加</el-button
-            >
-
-            <el-popconfirm
-              title="是否要删除该记录？"
-              confirmButtonText="确认"
-              cancelButtonText="取消"
-              @confirm="handleDelete(data.id)"
-            >
-              <template #reference>
-                <el-button text type="danger" size="small">删除</el-button>
-              </template>
-            </el-popconfirm>
+            <el-button text type="primary" size="small">增加</el-button>
+            <el-button text type="primary" size="small">删除</el-button>
           </div>
         </div>
       </template>
     </el-tree>
+
+    <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
+      <el-form
+        :model="form"
+        ref="formRef"
+        :rules="rules"
+        label-width="80px"
+        :inline="false"
+      >
+        <el-form-item label="上级菜单" prop="rule_id">
+          <el-cascader
+            v-model="form.rule_id"
+            :options="options"
+            :props="{
+              label: 'name',
+              children: 'child',
+              checkStrictly: true,
+              emitPath: false,
+            }"
+            placeholder="请选择上级菜单"
+          />
+        </el-form-item>
+        <el-form-item label="菜单/规则" prop="menu">
+          <el-input v-model="form.menu"></el-input>
+        </el-form-item>
+        <el-form-item label="菜单/权限名称" prop="name">
+          <el-input v-model="form.rule_id"></el-input>
+        </el-form-item>
+        <el-form-item label="菜单图标" prop="icon">
+          <el-input v-model="form.icon"></el-input>
+        </el-form-item>
+        <el-form-item label="前端路由" prop="frontpath">
+          <el-input v-model="form.frontpath"></el-input>
+        </el-form-item>
+        <el-form-item label="后端规则" prop="condition">
+          <el-input v-model="form.condition"></el-input>
+        </el-form-item>
+        <el-form-item label="请求方式" prop="method">
+          <el-input v-model="form.method"></el-input>
+        </el-form-item>
+        <el-form-item label="排序" prop="order">
+          <el-input v-model="form.order"></el-input>
+        </el-form-item>
+        <el-form-item label="上级菜单" prop="rule_id">
+          <el-input v-model="form.rule_id"></el-input>
+        </el-form-item>
+      </el-form>
+    </FormDrawer>
   </el-card>
 </template>
-
 <script setup>
 import { ref } from "vue";
-import ListHerder from "~/components/ListHerder.vue";
-import { getRuleList } from "~/api/rule.js";
+import ListHeader from "~/components/ListHeader.vue";
+import FormDrawer from "~/components/FormDrawer.vue";
+import { getRuleList, createRule, updateRule } from "~/api/rule.js";
 
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
 
+const options = ref([]);
 const defaultExpandedKeys = ref([]);
-
 const { loading, tableData, getData } = useInitTable({
   getList: getRuleList,
   onGetListSuccess: (res) => {
+    options.value = res.rules;
     tableData.value = res.list;
     defaultExpandedKeys.value = res.list.map((o) => o.id);
   },
 });
-</script>
 
-<style scoped>
+const {
+  formDrawerRef,
+  formRef,
+  form,
+  rules,
+  drawerTitle,
+  handleSubmit,
+  handleCreate,
+  handleEdit,
+} = useInitForm({
+  form: {
+    rule_id: 0,
+    menu: 0,
+    name: "",
+    condition: "",
+    method: "GET",
+    status: 1,
+    order: 50,
+    icon: "",
+    frontpath: "",
+  },
+  rules: {},
+
+  getData,
+
+  update: updateRule,
+  create: createRule,
+});
+</script>
+<style>
 .custom-tree-node {
   flex: 1;
   display: flex;
