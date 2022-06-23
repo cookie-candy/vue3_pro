@@ -150,7 +150,7 @@
   </el-card>
 </template>
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref } from "vue";
 import FormDrawer from "~/components/FormDrawer.vue";
 import ChooseImage from "~/components/ChooseImage.vue";
 import {
@@ -161,10 +161,8 @@ import {
   deleteManager,
 } from "~/api/manager";
 
-import { toast } from "~/composables/util";
-import { useInitTable } from "~/composables/useCommon.js";
+import { useInitTable, useInitForm } from "~/composables/useCommon.js";
 
-// 管理员列表
 const roles = ref([]);
 
 const {
@@ -189,7 +187,29 @@ const {
     total.value = res.totalCount;
     roles.value = res.roles;
   },
-  delete: deleteManager,
-  updateStatus: updateManagerStatus,
+});
+
+const {
+  formDrawerRef,
+  formRef,
+  form,
+  rules,
+  drawerTitle,
+  handleSubmit,
+  handleCreate,
+  handleEdit,
+  handleDelete,
+  handleStatusChange,
+} = useInitForm({
+  form: {
+    username: "",
+    password: "",
+    role_id: null,
+    status: 1,
+    avatar: "",
+  },
+  getData,
+  update: updateManager,
+  create: createManager,
 });
 </script>
