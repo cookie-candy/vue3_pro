@@ -1,18 +1,7 @@
 <template>
   <el-card shadow="never" class="border-0">
     <!-- 新增|刷新 -->
-    <div class="flex items-center justify-between mb-4">
-      <el-button type="primary" size="small" @click="handleCreate"
-        >新增</el-button
-      >
-      <el-tooltip effect="dark" content="刷新数据" placement="top">
-        <el-button text>
-          <el-icon :size="20">
-            <Refresh />
-          </el-icon>
-        </el-button>
-      </el-tooltip>
-    </div>
+    <ListHerder @create="handleCreate" @refresh="getData" />
 
     <el-table :data="tableData" stripe style="width: 100%">
       <el-table-column prop="title" label="公告标题" />
@@ -86,6 +75,7 @@ import {
   deleteNotice,
 } from "~/api/notice";
 import FormDrawer from "~/components/FormDrawer.vue";
+import ListHerder from "~/components/ListHerder.vue";
 
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
 
