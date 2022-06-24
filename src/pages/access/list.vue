@@ -23,6 +23,7 @@
               :modelValue="data.status"
               :active-value="1"
               :inactive-value="0"
+              @change="handleStatusChange($event, data)"
             />
             <el-button
               text
@@ -31,12 +32,29 @@
               @click.stop="handleEdit(data)"
               >修改</el-button
             >
-            <el-button text type="primary" size="small">增加</el-button>
-            <el-button text type="primary" size="small">删除</el-button>
+            <el-button
+              text
+              type="primary"
+              size="small"
+              @click.stop="addChild(data.id)"
+              >增加</el-button
+            >
+
+            <el-popconfirm
+              title="是否要删除该记录？"
+              confirmButtonText="确认"
+              cancelButtonText="取消"
+              @confirm="handleDelete(data.id)"
+            >
+              <template #reference>
+                <el-button text type="primary" size="small">删除</el-button>
+              </template>
+            </el-popconfirm>
           </div>
         </div>
       </template>
     </el-tree>
+
     <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
       <el-form
         :model="form"
@@ -111,19 +129,34 @@ import { ref } from "vue";
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from "~/components/FormDrawer.vue";
 import IconSelect from "~/components/IconSelect.vue";
+import {
+  getRuleList,
+  createRule,
+  updateRule,
+  updateRuleStatus,
+  deleteRule,
+} from "~/api/rule.js";
 
-import { getRuleList, createRule, updateRule } from "~/api/rule.js";
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
 
 const options = ref([]);
 const defaultExpandedKeys = ref([]);
-const { loading, tableData, getData } = useInitTable({
+const {
+  loading,
+  tableData,
+  getData,
+
+  handleDelete,
+  handleStatusChange,
+} = useInitTable({
   getList: getRuleList,
   onGetListSuccess: (res) => {
     options.value = res.rules;
     tableData.value = res.list;
     defaultExpandedKeys.value = res.list.map((o) => o.id);
   },
+  delete: deleteRule,
+  updateStatus: updateRuleStatus,
 });
 
 const {
@@ -154,6 +187,13 @@ const {
   update: updateRule,
   create: createRule,
 });
+
+// 添加子分类
+const addChild = (id) => {
+  handleCreate();
+  form.rule_id = id;
+  form.status = 1;
+};
 </script>
 <style>
 .custom-tree-node {
