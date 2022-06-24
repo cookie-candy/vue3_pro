@@ -19,8 +19,15 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180" align="center">
+      <el-table-column label="操作" width="250" align="center">
         <template #default="scope">
+          <el-button
+            type="primary"
+            size="small"
+            text
+            @click="openSetRule(scope.row)"
+            >配置权限</el-button
+          >
           <el-button
             type="primary"
             size="small"
@@ -83,9 +90,24 @@
         </el-form-item>
       </el-form>
     </FormDrawer>
+
+    <!-- 权限配置 -->
+    <FormDrawer
+      ref="setRuleFormDrawerRef"
+      title="权限配置"
+      @submit="handleSetRuleSubmit"
+    >
+      <el-tree-v2
+        :data="ruleList"
+        :props="{ label: 'name', children: 'child' }"
+        show-checkbox
+        :height="treeHeight"
+      />
+    </FormDrawer>
   </el-card>
 </template>
 <script setup>
+import { ref } from "vue";
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from "~/components/FormDrawer.vue";
 import {
@@ -95,6 +117,7 @@ import {
   deleteRole,
   updateRoleStatus,
 } from "~/api/role";
+import { getRuleList } from "~/api/rule";
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
 
 const {
@@ -140,4 +163,22 @@ const {
   update: updateRole,
   create: createRole,
 });
+
+// 设置角色FormDrawer
+const setRuleFormDrawerRef = ref(null);
+const ruleList = ref([]);
+const treeHeight = ref(0);
+//定义角色id方便后面
+const roleId = ref(0);
+const openSetRule = (row) => {
+  roleId.value = row.id;
+  treeHeight.value = window.innerHeight - 170;
+  // 数据就是规则列表的数据，这里获取第一页数据
+  getRuleList(1).then((res) => {
+    ruleList.value = res.list;
+    setRuleFormDrawerRef.value.open();
+  });
+};
+
+const handleSetRuleSubmit = () => {};
 </script>
