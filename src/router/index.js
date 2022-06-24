@@ -4,20 +4,21 @@ import {
 } from 'vue-router'
 
 import Admin from "~/layouts/admin.vue";
-import Index from '~/pages/index.vue'
-import Login from '~/pages/login.vue'
-import NotFound from '~/pages/404.vue'
-import GoodList from '~/pages/goods/list.vue'
-import CategoryList from '~/pages/category/list.vue'
-import UserList from '~/pages/user/list.vue'
-import OrderList from '~/pages/order/list.vue'
-import CommentList from '~/pages/comment/list.vue'
-import ImageList from '~/pages/image/list.vue'
-import NoticeList from '~/pages/notice/list.vue'
-import SettingBase from '~/pages/setting/base.vue'
-import CouponList from '~/pages/coupon/list.vue'
-import ManagerList from '~/pages/manager/list.vue'
-import AccessList from '~/pages/access/list.vue'
+import Index from '~/pages/index.vue';
+import Login from '~/pages/login.vue';
+import NotFound from '~/pages/404.vue';
+import GoodList from '~/pages/goods/list.vue';
+import CategoryList from '~/pages/category/list.vue';
+import UserList from '~/pages/user/list.vue';
+import OrderList from '~/pages/order/list.vue';
+import CommentList from '~/pages/comment/list.vue';
+import ImageList from '~/pages/image/list.vue';
+import NoticeList from '~/pages/notice/list.vue';
+import SettingBase from '~/pages/setting/base.vue';
+import CouponList from '~/pages/coupon/list.vue';
+import ManagerList from '~/pages/manager/list.vue';
+import AccessList from '~/pages/access/list.vue';
+import RoleList from '~/pages/role/list.vue';
 
 
 
@@ -124,6 +125,14 @@ const asyncRoutes = [{
     path: "/access/list",
     name: "/access/list",
     component: AccessList,
+    meta: {
+        title: "菜单权限管理"
+    }
+}, {
+
+    path: "/role/list",
+    name: "/role/list",
+    component: RoleList,
     meta: {
         title: "菜单权限管理"
     }
