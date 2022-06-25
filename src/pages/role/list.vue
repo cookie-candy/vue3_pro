@@ -100,13 +100,15 @@
       <el-tree-v2
         ref="elTreeRef"
         node-key="id"
+        :check-strictly="checkStrictly"
         :default-expanded-keys="defaultExpandedKeys"
         :data="ruleList"
         :props="{ label: 'name', children: 'child' }"
         show-checkbox
         :height="treeHeight"
+        @check="handleTreeCheck"
       >
-        <template #default="{ node, data }">
+        <template #default="{ data }">
           <div class="flex items-center">
             <el-tag :type="data.menu ? '' : 'info'" size="small">
               {{ data.menu ? "菜单" : "权限" }}
@@ -128,9 +130,11 @@ import {
   updateRole,
   deleteRole,
   updateRoleStatus,
+  setRoleRules,
 } from "~/api/role";
 import { getRuleList } from "~/api/rule";
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
+import { toast } from "~/composables/util";
 
 const {
   tableData,
@@ -185,10 +189,14 @@ const defaultExpandedKeys = ref([]);
 const elTreeRef = ref(null);
 // 当前角色拥有的权限ID
 const ruleIds = ref([]);
+const checkStrictly = ref(false);
 
 const openSetRule = (row) => {
   roleId.value = row.id;
   treeHeight.value = window.innerHeight - 180;
+  // 在获取数据之前 设置为不关联 看文档
+  checkStrictly.value = true;
+
   getRuleList(1).then((res) => {
     ruleList.value = res.list;
     defaultExpandedKeys.value = res.list.map((o) => o.id);
@@ -198,9 +206,27 @@ const openSetRule = (row) => {
     ruleIds.value = row.rules.map((o) => o.id);
     setTimeout(() => {
       elTreeRef.value.setCheckedKeys(ruleIds.value);
+      // 设置完成后在设置回去
+      checkStrictly.value = false;
     }, 150);
   });
 };
 
-const handleSetRuleSubmit = () => {};
+const handleSetRuleSubmit = () => {
+  setRuleFormDrawerRef.value.showLoading();
+  setRoleRules(roleId.value, ruleIds.value)
+    .then((res) => {
+      toast("配置成功！");
+      getData();
+      setRuleFormDrawerRef.value.close();
+    })
+    .finally(() => {
+      setRuleFormDrawerRef.value.showLoading();
+    });
+};
+
+const handleTreeCheck = (...e) => {
+  const { checkedKeys, halfCheckedKeys } = e[1];
+  ruleIds.value = [...checkedKeys, ...halfCheckedKeys];
+};
 </script>
