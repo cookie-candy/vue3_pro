@@ -66,7 +66,7 @@
         <el-form-item label="规格名称" prop="name">
           <el-input v-model="form.name" placeholder="规格名称"></el-input>
         </el-form-item>
-        <el-form-item label="配许" prop="order">
+        <el-form-item label="排序" prop="order">
           <el-input-number v-model="form.order" :min="0" :max="1000">
           </el-input-number>
         </el-form-item>
@@ -79,10 +79,7 @@
           </el-switch>
         </el-form-item>
         <el-form-item label="规格值" prop="default">
-          <el-input
-            v-model="form.default"
-            placeholder="规格值,以英文逗号隔开哦~"
-          ></el-input>
+          <TagInput v-model="form.default" />
         </el-form-item>
       </el-form>
     </FormDrawer>
@@ -92,6 +89,8 @@
 import { ref } from "vue";
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from "~/components/FormDrawer.vue";
+import TagInput from "~/components/TagInput.vue";
+
 import {
   getSkusList,
   createSkus,
