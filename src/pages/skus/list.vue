@@ -124,6 +124,9 @@ const {
   getData,
   handleDelete,
   handleStatusChange,
+  handleSelectionChange,
+  handleMultipleDelete,
+  multipleTableRef,
 } = useInitTable({
   getList: getSkusList,
   delete: deleteSkus,
@@ -166,29 +169,4 @@ const {
   update: updateSkus,
   create: createSkus,
 });
-
-// 多选选择ID
-const multipleSelectionIds = ref([]);
-const handleSelectionChange = (e) => {
-  multipleSelectionIds.value = e.map((o) => o.id);
-};
-
-// 批量删除
-const multipleTableRef = ref(false);
-const handleMultipleDelete = () => {
-  loading.value = true;
-  deleteSkus(multipleSelectionIds.value)
-    .then((res) => {
-      toast("删除成功！");
-      // 清空选中
-      if (multipleTableRef.value) {
-        multipleTableRef.value.clearSelection();
-      }
-      // 刷新数据
-      getData();
-    })
-    .finally(() => {
-      loading.value = false;
-    });
-};
 </script>

@@ -73,6 +73,30 @@ export function useInitTable(opt = {}) {
             })
     }
 
+    // 多选选择ID
+    const multipleSelectionIds = ref([]);
+    const handleSelectionChange = (e) => {
+        multipleSelectionIds.value = e.map((o) => o.id);
+    };
+
+    // 批量删除
+    const multipleTableRef = ref(null);
+    const handleMultipleDelete = () => {
+        loading.value = true;
+        opt.delete(multipleSelectionIds.value)
+            .then((res) => {
+                toast("删除成功！");
+                // 清空选中 看文档 
+                if (multipleTableRef.value) {
+                    multipleTableRef.value.clearSelection();
+                }
+                // 刷新数据
+                getData();
+            })
+            .finally(() => {
+                loading.value = false;
+            });
+    };
 
     return {
         searchForm,
@@ -84,7 +108,10 @@ export function useInitTable(opt = {}) {
         limit,
         getData,
         handleDelete,
-        handleStatusChange
+        handleStatusChange,
+        handleSelectionChange,
+        handleMultipleDelete,
+        multipleTableRef,
     }
 }
 
