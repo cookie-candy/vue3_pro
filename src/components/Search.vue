@@ -37,5 +37,5 @@ defineEmits(["search", "reset"]);
 const showSearch = ref(false);
 
 const slots = useSlots();
-const hasShowSearch = ref(!!slots.show);
+const hasShowSearch = ref(!!slots.show); // 强转布尔值
 </script>

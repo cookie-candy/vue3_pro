@@ -177,7 +177,7 @@
           <el-form-item label="商品名称" prop="title">
             <el-input
               v-model="form.title"
-              placeholder="请输入商品名称，不能超过60个字符"
+              placeholder="请输入商品名称,不能超过60个字符"
             ></el-input>
           </el-form-item>
           <el-form-item label="封面" prop="cover">
