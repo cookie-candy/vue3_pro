@@ -98,6 +98,24 @@ export function useInitTable(opt = {}) {
             });
     };
 
+    // 批量修改状态
+    const handleMultipleStatusChange = (status) => {
+        loading.value = true;
+        opt.updateStatus(multipleSelectionIds.value, status)
+            .then((res) => {
+                toast("删除成功！");
+                // 清空选中 看文档 
+                if (multipleTableRef.value) {
+                    multipleTableRef.value.clearSelection();
+                }
+                // 刷新数据
+                getData();
+            })
+            .finally(() => {
+                loading.value = false;
+            });
+    }
+
     return {
         searchForm,
         resetSearchForm,
@@ -112,6 +130,7 @@ export function useInitTable(opt = {}) {
         handleSelectionChange,
         handleMultipleDelete,
         multipleTableRef,
+        handleMultipleStatusChange
     }
 }
 

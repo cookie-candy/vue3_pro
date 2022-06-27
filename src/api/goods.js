@@ -6,7 +6,12 @@ export function getGoodsList(page, query = {}) {
     return axios.get(`/admin/goods/${page}${r}`);
 }
 
-
+/**
+ * 批量上架/下架商品
+ * @param {ids数组 删除的id} ids 
+ * @param {1:上架, 0:下架} status 
+ * @returns 
+ */
 export function updateGoodsStatus(ids, status) {
     return axios.post(`/admin/goods/changestatus`, {
         ids,
