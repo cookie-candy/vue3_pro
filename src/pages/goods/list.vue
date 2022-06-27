@@ -40,7 +40,6 @@
         style="width: 100%"
         v-loading="loading"
       >
-        <!-- 商品 -->
         <el-table-column label="商品" width="300">
           <template #default="{ row }">
             <div class="flex">
@@ -71,14 +70,12 @@
             </div>
           </template>
         </el-table-column>
-        <!-- 实际销量 -->
         <el-table-column
           label="实际销量"
           width="70"
           prop="sale_count"
           align="center"
         />
-        <!-- 商品状态 -->
         <el-table-column label="商品状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status ? 'success' : 'danger'" size="small">{{
@@ -86,8 +83,12 @@
             }}</el-tag>
           </template>
         </el-table-column>
-        <!-- 审核状态 -->
-        <el-table-column label="审核状态" width="120" align="center">
+        <el-table-column
+          label="审核状态"
+          width="120"
+          align="center"
+          v-if="searchForm.tab != 'delete'"
+        >
           <template #default="{ row }">
             <div class="flex flex-col" v-if="row.ischeck == 0">
               <el-button type="success" size="small" plain>审核通过</el-button>
@@ -98,17 +99,15 @@
             <span v-else>{{ row.ischeck == 1 ? "通过" : "拒绝" }}</span>
           </template>
         </el-table-column>
-        <!-- 总库存 -->
         <el-table-column
           label="总库存"
           width="90"
           prop="stock"
           align="center"
         />
-        <!-- 操作 -->
         <el-table-column label="操作" align="center">
           <template #default="scope">
-            <div>
+            <div v-if="searchForm.tab != 'delete'">
               <el-button
                 class="px-1"
                 type="primary"
@@ -140,6 +139,7 @@
                 </template>
               </el-popconfirm>
             </div>
+            <span v-else>暂无操作</span>
           </template>
         </el-table-column>
       </el-table>
@@ -204,6 +204,7 @@
 import { ref } from "vue";
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from "~/components/FormDrawer.vue";
+import ChooseImage from "~/components/ChooseImage.vue";
 import {
   getGoodsList,
   updateGoodsStatus,
@@ -235,7 +236,6 @@ const {
   },
   getList: getGoodsList,
   onGetListSuccess: (res) => {
-    console.log(res);
     tableData.value = res.list.map((o) => {
       o.statusLoading = false;
       return o;
