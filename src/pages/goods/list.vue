@@ -147,7 +147,12 @@
               <el-button class="px-1" type="primary" size="small" text
                 >商品规格</el-button
               >
-              <el-button class="px-1" type="primary" size="small" text
+              <el-button
+                class="px-1"
+                type="primary"
+                size="small"
+                text
+                @click="handleSetGoodsBanners(scope.row)"
                 >设置轮播图</el-button
               >
               <el-button class="px-1" type="primary" size="small" text
@@ -270,6 +275,8 @@
         </el-form>
       </FormDrawer>
     </el-card>
+
+    <banners ref="bannersRef" />
   </div>
 </template>
 <script setup>
@@ -279,6 +286,8 @@ import FormDrawer from "~/components/FormDrawer.vue";
 import ChooseImage from "~/components/ChooseImage.vue";
 import Search from "~/components/Search.vue";
 import SearchItem from "~/components/SearchItem.vue";
+import banners from "./banners.vue";
+
 import {
   getGoodsList,
   updateGoodsStatus,
@@ -381,4 +390,8 @@ const tabbars = [
 // 商品分类
 const category_list = ref([]);
 getCategoryList().then((res) => (category_list.value = res));
+
+// 设置轮播图
+const bannersRef = ref(null);
+const handleSetGoodsBanners = (row) => bannersRef.value.open(row);
 </script>
