@@ -158,7 +158,13 @@
                 :loading="scope.row.bannersLoading"
                 >设置轮播图</el-button
               >
-              <el-button class="px-1" type="primary" size="small" text
+              <el-button
+                class="px-1"
+                :type="scope.row.content ? 'danger' : 'primary'"
+                size="small"
+                text
+                @click="handleSetGoodsContent(scope.row)"
+                :loading="scope.row.contentLoading"
                 >商品详情</el-button
               >
 
@@ -280,6 +286,7 @@
     </el-card>
 
     <banners ref="bannersRef" @reload-data="getData" />
+    <content ref="contentRef" @reload-data="getData" />
   </div>
 </template>
 <script setup>
@@ -290,6 +297,7 @@ import ChooseImage from "~/components/ChooseImage.vue";
 import Search from "~/components/Search.vue";
 import SearchItem from "~/components/SearchItem.vue";
 import banners from "./banners.vue";
+import content from "./content.vue";
 
 import {
   getGoodsList,
@@ -327,6 +335,7 @@ const {
   onGetListSuccess: (res) => {
     tableData.value = res.list.map((o) => {
       o.bannersLoading = false;
+      o.contentLoading = false;
       return o;
     });
     total.value = res.totalCount;
@@ -397,4 +406,8 @@ getCategoryList().then((res) => (category_list.value = res));
 // 设置轮播图
 const bannersRef = ref(null);
 const handleSetGoodsBanners = (row) => bannersRef.value.open(row);
+
+// 设置商品
+const contentRef = ref(null);
+const handleSetGoodsContent = (row) => contentRef.value.open(row);
 </script>
