@@ -15,7 +15,7 @@ export function createNotice(data) {
 
 /**
  * 更新公告
- * @param {公告ID} id 
+ * @param {number} id 
  * @param {title,content} data 
  * @returns 
  */
@@ -24,8 +24,8 @@ export function updateNotice(id, data) {
 }
 
 /**
- * 删除公告
- * @param {公告id} id 
+ * 删除公告 
+ * @param {number} id 公告id
  * @returns 
  */
 export function deleteNotice(id) {

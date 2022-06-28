@@ -1,5 +1,6 @@
 <template>
   <div v-if="modelValue">
+    <!-- 这里做个判断 -->
     <el-image
       v-if="typeof modelValue == 'string'"
       :src="modelValue"
@@ -49,7 +50,12 @@
       </el-header>
       <el-container>
         <ImageAside ref="ImageAsideRef" @change="handleAsideChange" />
-        <ImageMain openChoose ref="ImageMainRef" @choose="handleChoose" />
+        <ImageMain
+          openChoose
+          :limit="limit"
+          ref="ImageMainRef"
+          @choose="handleChoose"
+        />
       </el-container>
     </el-container>
 
@@ -65,6 +71,7 @@
 import { ref } from "vue";
 import ImageAside from "~/components/ImageAside.vue";
 import ImageMain from "~/components/ImageMain.vue";
+import { toast } from "~/composables/util";
 
 const dialogVisible = ref(false);
 
@@ -82,6 +89,10 @@ const handleOpenUpload = () => ImageMainRef.value.openUploadFile();
 
 const props = defineProps({
   modelValue: [String, Array],
+  limit: {
+    type: Number,
+    default: 1,
+  },
 });
 const emit = defineEmits(["update:modelValue"]);
 
@@ -90,9 +101,21 @@ const handleChoose = (e) => {
   urls = e.map((o) => o.url);
 };
 
+// 提交选择图片判断处理，最多9张
 const submit = () => {
-  if (urls.length) {
-    emit("update:modelValue", urls[0]);
+  let value = [];
+  if (props.limit == 1) {
+    value = urls[0];
+  } else {
+    value = [...props.modelValue, ...urls];
+    if (value.length > props.limit) {
+      return toast(
+        "最多还能选择" + (props.limit - props.modelValue.length) + "张"
+      );
+    }
+  }
+  if (value) {
+    emit("update:modelValue", value);
   }
   close();
 };

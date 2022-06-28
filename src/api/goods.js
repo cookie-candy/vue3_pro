@@ -3,7 +3,7 @@ import { queryParams } from "~/composables/util";
 
 export function getGoodsList(page, query = {}) {
     let r = queryParams(query);
-    return axios.get(`/admin/goods/${page}${r}`);
+    return axios.get(`/admin/goods/${page}${r}`)
 }
 
 /**
@@ -38,8 +38,6 @@ export function readGoods(id) {
     return axios.get(`/admin/goods/read/${id}`)
 }
 
-
 export function setGoodsBanner(id, data) {
-    return axios.post(`/admin/goods/banner/${id}`, data)
+    return axios.post(`/admin/goods/banners/${id}`, data)
 }
-
