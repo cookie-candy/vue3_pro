@@ -1,10 +1,37 @@
 <template>
   <div v-if="modelValue">
     <el-image
+      v-if="typeof modelValue == 'string'"
       :src="modelValue"
       fit="cover"
       class="w-[100px] h-[100px] rounded border mr-2"
     ></el-image>
+    <div v-else class="flex flex-wrap">
+      <div
+        class="relative mx-1 mb-2 w-[100px] h-[100px]"
+        v-for="(url, index) in modelValue"
+        :key="index"
+      >
+        <el-icon
+          class="
+            absolute
+            right-[5px]
+            top-[5px]
+            cursor-pointer
+            bg-white
+            rounded-full
+          "
+          style="z-index: 10"
+          @click="removeImage(url)"
+          ><CircleClose
+        /></el-icon>
+        <el-image
+          :src="url"
+          fit="cover"
+          class="w-[100px] h-[100px] rounded border mr-2"
+        ></el-image>
+      </div>
+    </div>
   </div>
 
   <div class="choose-image-btn" @click="open">
@@ -69,6 +96,13 @@ const submit = () => {
   }
   close();
 };
+
+// 移除图片
+const removeImage = (url) =>
+  emit(
+    "update:modelValue",
+    props.modelValue.filter((u) => u != url)
+  );
 </script>
 <style>
 .image-header {
