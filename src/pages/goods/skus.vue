@@ -39,7 +39,7 @@
           </el-input>
         </el-form-item>
       </template>
-      <template v-else> 多规格 </template>
+      <template v-else> <SkuCard /> </template>
     </el-form>
   </FormDrawer>
 </template>
@@ -47,6 +47,7 @@
 <script setup>
 import { ref, reactive } from "vue";
 import FormDrawer from "~/components/FormDrawer.vue";
+import SkuCard from "./components/SkuCard.vue";
 
 import { readGoods, updateGoods } from "~/api/goods";
 import { toast } from "~/composables/util";
