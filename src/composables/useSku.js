@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { createGoodsSkusCard } from "~/api/goods.js";
+import { createGoodsSkusCard, updateGoodsSkusCard, deleteGoodsSkusCard } from "~/api/goods.js";
 
 // 当前商品Id
 export const goodsId = ref(0);
@@ -35,18 +35,52 @@ export const btnLoading = ref(false);
 export function addSkuCardEvent() {
     btnLoading.value = true;
     createGoodsSkusCard({
-        "goods_id": 26, //商品ID
-        "name": "规格选项", //规格名称
-        "order": 50, //排序
-        "type": 0 //规格类型 0文字
+        goods_id: goodsId.value,
+        name: "规格选项",
+        order: 50,
+        type: 0
     }).then(res => {
-        sku_card_list.push({
+        sku_card_list.value.push({
             ...res,
             text: res.name,
             loading: false,
             goodsSkusCardValue: []
         })
-    }).finally(() => {
-        btnLoading.value = false;
     })
+        .finally(() => {
+            btnLoading.value = false;
+        })
+}
+
+// 修改规格选项
+export function handleUpdate(item) {
+    // console.log(item)
+    item.loading = true;
+    updateGoodsSkusCard(item.id, {
+        "goods_id": item.goods_id,
+        "name": item.text,
+        "order": item.order,
+        "type": 0
+    }).then(res => {
+        // name是原来的值，text是修改后的值
+        item.name = item.text;
+    })
+        .catch(err => {
+            item.text = item.name;
+        })
+        .finally(() => {
+            item.loading = false;
+        });
+}
+
+// 删除规格选项
+export function handleDelete(item) {
+    item.loading = true;
+    deleteGoodsSkusCard(item.id)
+        .then(res => {
+            const i = sku_card_list.value.findIndex(o => o.id == item.id)
+            if (i != -1) {
+                sku_card_list.value.splice(i, 1);
+            }
+        })
 }
