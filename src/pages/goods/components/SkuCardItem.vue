@@ -1,5 +1,5 @@
 <template>
-  <div v-for="(tag, index) in item.goodsSkusCardValue" :key="tag.id">
+  <div v-for="tag in item.goodsSkusCardValue" :key="tag.id">
     {{ tag.text }}
   </div>
 </template>
