@@ -49,6 +49,8 @@ import { ref, reactive } from "vue";
 import FormDrawer from "~/components/FormDrawer.vue";
 import SkuCard from "./components/SkuCard.vue";
 
+import { goodsId, initSkuCardList } from "~/composables/useSku.js";
+
 import { readGoods, updateGoods } from "~/api/goods";
 import { toast } from "~/composables/util";
 
@@ -64,7 +66,9 @@ const form = reactive({
     volume: 0,
   },
 });
-const goodsId = ref(0);
+
+// 上面已经引入 这里不需要
+// const goodsId = ref(0);
 const open = (row) => {
   //   console.log(row);
   goodsId.value = row.id;
@@ -79,6 +83,10 @@ const open = (row) => {
         weight: 0,
         volume: 0,
       };
+
+      // console.log(res);
+      initSkuCardList(res);
+
       formDrawerRef.value.open();
     })
     .finally(() => {
