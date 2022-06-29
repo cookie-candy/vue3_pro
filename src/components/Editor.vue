@@ -1,7 +1,10 @@
 <template>
   <editor v-model="content" tag-name="div" :init="init" />
+  <ChooseImage ref="ChooseImageRef" :limit="9" :preview="false" />
 </template>
 <script setup>
+import ChooseImage from "./ChooseImage.vue";
+
 import tinymce from "tinymce/tinymce";
 import Editor from "@tinymce/tinymce-vue";
 import { ref, watch } from "vue";
@@ -44,6 +47,9 @@ const props = defineProps({
   modelValue: String,
 });
 const emit = defineEmits(["update:modelValue"]);
+
+const ChooseImageRef = ref(null);
+
 // 配置
 const init = {
   language_url: "/tinymce/langs/zh-Hans.js", // 中文语言包路径
@@ -76,9 +82,16 @@ const init = {
       onAction() {
         //console.log("插入图片");
         //富文本编辑器插入图片
-        editor.insertContent(
-          `<img src="http://tangzhe123-com.oss-cn-shenzhen.aliyuncs.com/public/60bf2a510e681.jpg" style="width:100%;"/>`
-        );
+        // editor.insertContent(
+        //   `<img src="http://tangzhe123-com.oss-cn-shenzhen.aliyuncs.com/public/60bf2a510e681.jpg" style="width:100%;"/>`
+        // );
+
+        ChooseImageRef.value.open((data) => {
+          // console.log(data);
+          data.forEach((url) => {
+            editor.insertContent(`<img src="${url}" style="width:100%;"/>`);
+          });
+        });
       },
     });
   },
