@@ -5,7 +5,8 @@ import {
     deleteGoodsSkusCard,
     sortGoodsSkusCard,
     createGoodsSkusCardValue,
-    updateGoodsSkusCardValue
+    updateGoodsSkusCardValue,
+    deleteGoodsSkusCardValue
 } from "~/api/goods.js";
 
 import { useArrayMoveUp, useArrayMoveDown } from '~/composables/util.js'
@@ -130,7 +131,16 @@ export function initSkusCardItem(id) {
     const InputRef = ref();
 
     const handleClose = (tag) => {
-        dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1);
+        loading.value = true;
+        deleteGoodsSkusCardValue(tag.id)
+            .then((res) => {
+                let i = item.goodsSkusCardValue.findIndex(o => o.id === tag.id);
+                if (i != -1) {
+                    item.goodsSkusCardValue.splice(i, 1)
+                }
+            }).finally(() => {
+                loading.value = false;
+            })
     };
 
     const showInput = () => {
