@@ -1,9 +1,10 @@
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import {
     createGoodsSkusCard,
     updateGoodsSkusCard,
     deleteGoodsSkusCard,
-    sortGoodsSkusCard
+    sortGoodsSkusCard,
+    createGoodsSkusCardValue
 } from "~/api/goods.js";
 
 import { useArrayMoveUp, useArrayMoveDown } from '~/composables/util.js'
@@ -115,4 +116,62 @@ export function sortCard(action, index) {
         .finally(() => {
             bodyLoading.value = false;
         })
+}
+
+//  初始化规格的值
+export function initSkusCardItem(id) {
+
+    const item = sku_card_list.value.find(o => o.id == id)
+
+    const inputValue = ref("");
+    const dynamicTags = ref(["Tag 1", "Tag 2", "Tag 3"]);
+    const inputVisible = ref(false);
+    const InputRef = ref();
+
+    const handleClose = (tag) => {
+        dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1);
+    };
+
+    const showInput = () => {
+        inputVisible.value = true;
+        nextTick(() => {
+            InputRef.value.input.focus();
+        });
+    };
+
+    const loading = ref(false);
+    const handleInputConfirm = () => {
+        if (!inputValue.value) {
+            inputVisible.value = false;
+            return;
+        }
+        loading.value = true;
+        createGoodsSkusCardValue({
+            goods_skus_card_id: id,
+            name: item.name,
+            order: 50,
+            value: inputValue.value
+        }).then((res) => {
+            item.goodsSkusCardValue.push({
+                ...res,
+                text: res.value
+            })
+        }).finally(() => {
+            inputVisible.value = false
+            inputValue.value = ''
+            loading.value = false
+        })
+    };
+
+    return {
+        item,
+        inputValue,
+        inputVisible,
+        InputRef,
+        handleClose,
+        showInput,
+        handleInputConfirm,
+        loading,
+    }
+
 }
