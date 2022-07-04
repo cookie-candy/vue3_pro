@@ -3,7 +3,15 @@
     <el-container style="height: 65vh">
       <el-aside width="220px" class="image-aside">
         <div class="top">
-          {{ tableData }}
+          <div
+            class="sku-list"
+            :class="{ active: activeid == item.id }"
+            v-for="(item, index) in tableData"
+            :key="index"
+            @click="handleChangeActiveId(item.id)"
+          >
+            {{ item.name }}
+          </div>
         </div>
         <div class="bottom">
           <el-pagination
@@ -16,7 +24,7 @@
           />
         </div>
       </el-aside>
-      <el-main> 内容 </el-main>
+      <el-main> {{ list }} </el-main>
     </el-container>
 
     <template #footer>
@@ -28,11 +36,13 @@
   </el-dialog>
 </template>
 <script setup>
+import { list } from "postcss";
 import { ref } from "vue";
 import { getSkusList } from "~/api/skus";
 import { useInitTable } from "~/composables/useCommon";
 
 const dialogVisible = ref(false);
+const activeId = ref(0);
 
 const { loading, currentPage, limit, total, tableData, getData } = useInitTable(
   {
@@ -43,6 +53,16 @@ const { loading, currentPage, limit, total, tableData, getData } = useInitTable(
 const open = () => {
   getData(1);
   dialogVisible.value = true;
+};
+
+const handleChangeActiveId = (id) => {
+  activeId.value = id;
+  list.value = [];
+  //   console.log(tableData.value);
+  let item = tableData.value.find((o) => o.id == id);
+  if (item) {
+    list.value = item.default.split(",");
+  }
 };
 
 const submit = () => {};
@@ -71,5 +91,14 @@ defineExpose({
   left: 0;
   right: 0;
   @apply flex items-center justify-center;
+}
+
+.sku-list {
+  boder-bottom: 1px solid #f4f4f4;
+  @apply p-3 text-sm text-gray-600 flex items-center cursor-pointer;
+}
+.sku-list:hover,
+active {
+  @apply bg-blue-50;
 }
 </style>
