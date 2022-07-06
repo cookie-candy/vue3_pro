@@ -40,11 +40,25 @@
 
       <!-- 新增|刷新 -->
       <ListHeader
-        layout="create,delete,refresh"
+        layout="create,refresh"
         @create="handleCreate"
         @refresh="getData"
         @delete="handleMultiDelete"
       >
+        <el-button
+          size="small"
+          type="danger"
+          @click="handleMultiDelete"
+          v-if="searchForm.tab != 'delete'"
+          >批量删除</el-button
+        >
+        <el-button
+          type="warning"
+          size="small"
+          @click="handleRestoreGoods"
+          v-else
+          >恢复商品</el-button
+        >
         <el-button
           size="small"
           @click="handleMultipleStatusChange(1)"
@@ -183,7 +197,7 @@
                 title="是否要删除该商品？"
                 confirmButtonText="确认"
                 cancelButtonText="取消"
-                @confirm="handleDelete(scope.row.id)"
+                @confirm="handleDelete([scope.row.id])"
               >
                 <template #reference>
                   <el-button class="px-1" text type="primary" size="small"
@@ -318,10 +332,11 @@ import {
   createGoods,
   updateGoods,
   deleteGoods,
+  restoreGoods,
 } from "~/api/goods";
 import { getCategoryList } from "~/api/category";
-
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
+import { toast } from "~/composables/util.js";
 
 const {
   handleSelectionChange,
@@ -338,6 +353,8 @@ const {
   limit,
   getData,
   handleDelete,
+
+  multipleSelectionIds,
 } = useInitTable({
   searchForm: {
     title: "",
@@ -429,4 +446,23 @@ const handleSetGoodsContent = (row) => contentRef.value.open(row);
 // 设置商品规格
 const skusRef = ref(null);
 const handleSetGoodsSkus = (row) => skusRef.value.open(row);
+
+// 恢复商品
+const handleRestoreGoods = () => {
+  loading.value = true;
+  // console.log(multipleSelectionIds);
+  restoreGoods(multipleSelectionIds.value)
+    .then((res) => {
+      toast("恢复商品成功！");
+      // 清空选中 看文档
+      if (multipleTableRef.value) {
+        multipleTableRef.value.clearSelection();
+      }
+      // 刷新数据
+      getData();
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+};
 </script>
