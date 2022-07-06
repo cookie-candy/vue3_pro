@@ -299,7 +299,7 @@ function getTableData() {
     setTimeout(() => {
         if (sku_card_list.value.length === 0) return []
 
-        let list = []
+        let list = [];
         sku_card_list.value.forEach(o => {
             if (o.goodsSkusCardValue && o.goodsSkusCardValue.length > 0) {
                 list.push(o.goodsSkusCardValue)
@@ -310,22 +310,48 @@ function getTableData() {
             return []
         }
 
-        let arr = cartesianProductOf(...list)
+        let arr = cartesianProductOf(...list);
+
+        // 获取之前的规格列表，将规格ID排序之后转成字符串
+        let beforeSkuList = JSON.parse(JSON.stringify(sku_list.value)).map(o => {
+            if (!Array.isArray(o.skus)) {
+                o.skus = Object.keys(o.skus).map(k => o.skus[k])
+            }
+            o.skusId = o.skus.sort((a, b) => a.id - b.id).map(s => s.id).join(",")
+            // o.skusId = "290,282"
+            return o
+        })
+
 
         sku_list.value = []
-        sku_list.value = arr.map(o => {
+        sku_list.value = arr.map(skus => {
+            // 这里要做细节出处理，转成字符串 ，直接穿skus先添加规格数据后有点bug
+            let o = getBeforeSkuItem(JSON.parse(stringify(skus)), beforeSkuList)
+
             return {
-                code: "",
-                cprice: "0.00",
+                code: o?.code || "",
+                cprice: o?.cprice || "0.00",
                 goods_id: goodsId.value,
-                image: "",
-                oprice: "0.00",
-                pprice: "0.00",
-                skus: o,
-                stock: 0,
-                volume: 0,
-                weight: 0,
+                image: o?.image || "",
+                oprice: o?.oprice || "0.00",
+                pprice: o?.pprice || "0.00",
+                skus,
+                stock: o?.stock || 0,
+                volume: o?.volume || 0,
+                weight: o?.weight || 0,
             }
         })
     }, 200)
+}
+
+// 这里比较难
+function getBeforeSkuItem(skus, beforeSkuList) {
+    let skusId = skus.sort((a, b) => a.id - b.id).map(s => s.id).join(",");
+    // 谁的数据大，就找谁 新老数据对比
+    return beforeSkuList.find(o => {
+        if (skus.length > o.skus.length) {
+            return skusId.indexOf(o.skusId) != -1
+        }
+        return o.skusId.indexOf(skusId) != -1
+    })
 }

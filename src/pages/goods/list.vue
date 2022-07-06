@@ -146,7 +146,12 @@
               >
               <el-button
                 class="px-1"
-                type="primary"
+                :type="
+                  (scope.row.sku_type == 0 && !scope.row.sku_value) ||
+                  (scope.row.sku_type == 1 && !scope.row.goods_skus.length)
+                    ? 'danger'
+                    : 'primary'
+                "
                 size="small"
                 text
                 @click="handleSetGoodsSkus(scope.row)"
