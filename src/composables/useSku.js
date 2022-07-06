@@ -6,7 +6,8 @@ import {
     sortGoodsSkusCard,
     createGoodsSkusCardValue,
     updateGoodsSkusCardValue,
-    deleteGoodsSkusCardValue
+    deleteGoodsSkusCardValue,
+    chooseAndSetGoodsSkusCard
 } from "~/api/goods.js";
 
 import { useArrayMoveUp, useArrayMoveDown } from '~/composables/util.js'
@@ -120,6 +121,23 @@ export function sortCard(action, index) {
         })
 }
 
+// 选择设置规格
+export function handleChooseSetGoodsSkusCard(id, data) {
+    let item = sku_card_list.value.find(item => item.id === id)
+    item.loading = true;
+    chooseAndSetGoodsSkusCard(id, data)
+        .then(res => {
+            console.log(res)
+            item.name = item.text = res.goods_skus_card.name;
+            item.goodsSkusCardValue = res.goods_skus_card_value.map(o => {
+                o.text = o.value || "属性值";
+                return o
+            })
+        }).finally(() => {
+            item.loading = false;
+        })
+}
+
 //  初始化规格的值
 export function initSkusCardItem(id) {
 
@@ -193,6 +211,8 @@ export function initSkusCardItem(id) {
                 loading.value = false
             })
     }
+
+
 
     return {
         item,

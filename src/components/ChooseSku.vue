@@ -24,7 +24,13 @@
           />
         </div>
       </el-aside>
-      <el-main> {{ list }} </el-main>
+      <el-main>
+        <el-checkbox-group v-model="form.list">
+          <el-checkbox v-for="item in list" :key="item" :label="item" border>
+            {{ item }}
+          </el-checkbox>
+        </el-checkbox-group>
+      </el-main>
     </el-container>
 
     <template #footer>
@@ -36,8 +42,7 @@
   </el-dialog>
 </template>
 <script setup>
-import { list } from "postcss";
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { getSkusList } from "~/api/skus";
 import { useInitTable } from "~/composables/useCommon";
 
@@ -47,25 +52,48 @@ const activeId = ref(0);
 const { loading, currentPage, limit, total, tableData, getData } = useInitTable(
   {
     getList: getSkusList,
+    onGetListSuccess: (res) => {
+      tableData.value = res.list;
+      total.value = res.totalCount;
+
+      if (tableData.value.length > 0) {
+        handleChangeActiveId(tableData.value[0].id);
+      }
+    },
   }
 );
 
-const open = () => {
+const callbackFunction = ref(null);
+const open = (callback = null) => {
+  callbackFunction.value = callback;
   getData(1);
   dialogVisible.value = true;
 };
 
-const handleChangeActiveId = (id) => {
+const list = ref([]);
+const form = reactive({
+  list: [],
+  name: "",
+});
+
+// 激活变化的id
+function handleChangeActiveId(id) {
   activeId.value = id;
   list.value = [];
   //   console.log(tableData.value);
   let item = tableData.value.find((o) => o.id == id);
   if (item) {
     list.value = item.default.split(",");
+    form.name = item.name;
   }
-};
+}
 
-const submit = () => {};
+const submit = () => {
+  if (typeof callbackFunction.value === "function") {
+    callbackFunction.value(form);
+  }
+  dialogVisible.value = false;
+};
 
 defineExpose({
   open,
