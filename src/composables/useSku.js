@@ -10,7 +10,7 @@ import {
     chooseAndSetGoodsSkusCard
 } from "~/api/goods.js";
 
-import { useArrayMoveUp, useArrayMoveDown } from '~/composables/util.js'
+import { useArrayMoveUp, useArrayMoveDown, cartesianProductOf } from '~/composables/util.js'
 
 // 当前商品Id
 export const goodsId = ref(0);
@@ -99,6 +99,9 @@ export function handleDelete(item) {
             if (i != -1) {
                 sku_card_list.value.splice(i, 1);
             }
+
+            // 调用
+            getTableData()
         })
 }
 
@@ -121,6 +124,8 @@ export function sortCard(action, index) {
     })
         .then(res => {
             func(sku_card_list.value, index)
+
+            getTableData()
         })
         .finally(() => {
             bodyLoading.value = false;
@@ -139,6 +144,8 @@ export function handleChooseSetGoodsSkusCard(id, data) {
                 o.text = o.value || "属性值";
                 return o
             })
+
+            getTableData()
         }).finally(() => {
             item.loading = false;
         })
@@ -160,6 +167,7 @@ export function initSkusCardItem(id) {
                 if (i != -1) {
                     item.goodsSkusCardValue.splice(i, 1)
                 }
+                getTableData()
             }).finally(() => {
                 loading.value = false;
             })
@@ -189,6 +197,7 @@ export function initSkusCardItem(id) {
                 ...res,
                 text: res.value
             })
+            getTableData()
         }).finally(() => {
             inputVisible.value = false
             inputValue.value = ''
@@ -205,9 +214,10 @@ export function initSkusCardItem(id) {
             "order": tag.order,
             "value": value
         })
-            .then(res => [
+            .then(res => {
                 tag.value = value
-            ])
+                getTableData()
+            })
             .catch(err => {
                 tag.text = tag.value
             })
@@ -234,6 +244,7 @@ export function initSkusCardItem(id) {
 
 // 初始化表格
 export function initSkuTable() {
+
     const skuLabels = computed(() => sku_card_list.value.filter(v => v.goodsSkusCardValue.length > 0))
 
     // 获取表头
@@ -243,11 +254,11 @@ export function initSkuTable() {
             name: "商品规格",
             colspan: length,
             width: "",
+            // 合并2格
             rowspan: length > 0 ? 1 : 2
         }, {
             name: "销售价",
             width: "100",
-            // 合并两行
             rowspan: 2
         }, {
             name: "市场价",
@@ -263,7 +274,8 @@ export function initSkuTable() {
             rowspan: 2
         }, {
             name: "体积",
-            width: "100"
+            width: "100",
+            rowspan: 2
         }, {
             name: "重量",
             width: "100",
@@ -280,4 +292,40 @@ export function initSkuTable() {
         tableThs,
         sku_list
     }
+}
+
+// 获取规格表格数据
+function getTableData() {
+    setTimeout(() => {
+        if (sku_card_list.value.length === 0) return []
+
+        let list = []
+        sku_card_list.value.forEach(o => {
+            if (o.goodsSkusCardValue && o.goodsSkusCardValue.length > 0) {
+                list.push(o.goodsSkusCardValue)
+            }
+        })
+
+        if (list.length == 0) {
+            return []
+        }
+
+        let arr = cartesianProductOf(...list)
+
+        sku_list.value = []
+        sku_list.value = arr.map(o => {
+            return {
+                code: "",
+                cprice: "0.00",
+                goods_id: goodsId.value,
+                image: "",
+                oprice: "0.00",
+                pprice: "0.00",
+                skus: o,
+                stock: 0,
+                volume: 0,
+                weight: 0,
+            }
+        })
+    }, 200)
 }
