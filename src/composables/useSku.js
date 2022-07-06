@@ -1,4 +1,4 @@
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, computed } from 'vue';
 import {
     createGoodsSkusCard,
     updateGoodsSkusCard,
@@ -18,6 +18,8 @@ export const goodsId = ref(0);
 // 规格选项列表
 export const sku_card_list = ref([]);
 
+export const sku_list = ref([]);
+
 
 // 初始化规格选项列表
 export function initSkuCardList(d) {
@@ -30,7 +32,11 @@ export function initSkuCardList(d) {
         })
         return item
     })
+
+    console.log(d)
+    sku_list.value = d.goodsSkus
 }
+
 
 // 初始化规格的值
 export function initSkuCardItem(id) {
@@ -142,12 +148,10 @@ export function handleChooseSetGoodsSkusCard(id, data) {
 export function initSkusCardItem(id) {
 
     const item = sku_card_list.value.find(o => o.id == id)
-
-    const inputValue = ref("");
-    const dynamicTags = ref(["Tag 1", "Tag 2", "Tag 3"]);
+    const loading = ref(false);
+    const inputValue = ref('');
     const inputVisible = ref(false);
     const InputRef = ref();
-
     const handleClose = (tag) => {
         loading.value = true;
         deleteGoodsSkusCardValue(tag.id)
@@ -168,7 +172,7 @@ export function initSkusCardItem(id) {
         });
     };
 
-    const loading = ref(false);
+
     const handleInputConfirm = () => {
         if (!inputValue.value) {
             inputVisible.value = false;
@@ -226,4 +230,54 @@ export function initSkusCardItem(id) {
         handleChange
     }
 
+}
+
+// 初始化表格
+export function initSkuTable() {
+    const skuLabels = computed(() => sku_card_list.value.filter(v => v.goodsSkusCardValue.length > 0))
+
+    // 获取表头
+    const tableThs = computed(() => {
+        let length = skuLabels.value.length;
+        return [{
+            name: "商品规格",
+            colspan: length,
+            width: "",
+            rowspan: length > 0 ? 1 : 2
+        }, {
+            name: "销售价",
+            width: "100",
+            // 合并两行
+            rowspan: 2
+        }, {
+            name: "市场价",
+            width: "100",
+            rowspan: 2
+        }, {
+            name: "成本价",
+            width: "100",
+            rowspan: 2
+        }, {
+            name: "库存",
+            width: "100",
+            rowspan: 2
+        }, {
+            name: "体积",
+            width: "100"
+        }, {
+            name: "重量",
+            width: "100",
+            rowspan: 2
+        }, {
+            name: "编码",
+            width: "100",
+            rowspan: 2
+        }]
+    })
+
+    return {
+        skuLabels,
+        tableThs,
+        sku_list
+    }
 }

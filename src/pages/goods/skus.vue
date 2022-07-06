@@ -39,7 +39,10 @@
           </el-input>
         </el-form-item>
       </template>
-      <template v-else> <SkuCard /> </template>
+      <template v-else>
+        <SkuCard />
+        <SkuTable />
+      </template>
     </el-form>
   </FormDrawer>
 </template>
@@ -48,6 +51,7 @@
 import { ref, reactive } from "vue";
 import FormDrawer from "~/components/FormDrawer.vue";
 import SkuCard from "./components/SkuCard.vue";
+import SkuTable from "./components/SkuTable.vue";
 
 import { goodsId, initSkuCardList } from "~/composables/useSku.js";
 
