@@ -59,6 +59,17 @@
           v-else
           >恢复商品</el-button
         >
+        <el-popconfirm
+          v-if="searchForm.tab == 'delete'"
+          title="是否要彻底删除该商品？"
+          confirmButtonText="确认"
+          cancelButtonText="取消"
+          @confirm="handleDestroyGoods"
+        >
+          <template #reference>
+            <el-button type="danger" size="small">彻底删除</el-button>
+          </template>
+        </el-popconfirm>
         <el-button
           size="small"
           @click="handleMultipleStatusChange(1)"
@@ -333,6 +344,7 @@ import {
   updateGoods,
   deleteGoods,
   restoreGoods,
+  destroyGoods,
 } from "~/api/goods";
 import { getCategoryList } from "~/api/category";
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
@@ -449,11 +461,20 @@ const handleSetGoodsSkus = (row) => skusRef.value.open(row);
 
 // 恢复商品
 const handleRestoreGoods = () => {
+  useMultipleAction(destroyGoods, "恢复成功");
+};
+
+// 彻底删除商品
+const handleDestroyGoods = () => {
+  useMultipleAction(destroyGoods, "彻底删除");
+};
+
+function useMultipleAction(func, msg) {
   loading.value = true;
   // console.log(multipleSelectionIds);
-  restoreGoods(multipleSelectionIds.value)
+  func(multipleSelectionIds.value)
     .then((res) => {
-      toast("恢复商品成功！");
+      toast(msg + "成功!");
       // 清空选中 看文档
       if (multipleTableRef.value) {
         multipleTableRef.value.clearSelection();
@@ -464,5 +485,5 @@ const handleRestoreGoods = () => {
     .finally(() => {
       loading.value = false;
     });
-};
+}
 </script>
