@@ -33,6 +33,20 @@ export function deleteGoods(ids) {
         ids
     })
 }
+// 批量恢复回收站删除商品
+export function restoreGoods(ids) {
+    return axios.post(`/admin/goods/restore`, {
+        ids
+    })
+}
+
+// 彻底删除商品
+export function destroyGoods(ids) {
+    return axios.post(`/admin/goods/destroy`, {
+        ids
+    })
+}
+
 
 export function readGoods(id) {
     return axios.get(`/admin/goods/read/${id}`)
@@ -74,4 +88,9 @@ export function updateGoodsSkusCardValue(id, data) {
 
 export function deleteGoodsSkusCardValue(id) {
     return axios.post(`/admin/goods_skus_card_value/${id}/delete`)
+}
+
+
+export function chooseAndSetGoodsSkusCard(id, data) {
+    return axios.post(`/admin/goods_skus_card/${id}/set`, data)
 }

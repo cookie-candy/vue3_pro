@@ -39,7 +39,10 @@
           </el-input>
         </el-form-item>
       </template>
-      <template v-else> <SkuCard /> </template>
+      <template v-else>
+        <SkuCard />
+        <SkuTable />
+      </template>
     </el-form>
   </FormDrawer>
 </template>
@@ -48,8 +51,9 @@
 import { ref, reactive } from "vue";
 import FormDrawer from "~/components/FormDrawer.vue";
 import SkuCard from "./components/SkuCard.vue";
+import SkuTable from "./components/SkuTable.vue";
 
-import { goodsId, initSkuCardList } from "~/composables/useSku.js";
+import { goodsId, initSkuCardList, sku_list } from "~/composables/useSku.js";
 
 import { readGoods, updateGoods } from "~/api/goods";
 import { toast } from "~/composables/util";
@@ -99,7 +103,15 @@ const emit = defineEmits(["reloadData"]);
 
 const submit = () => {
   formDrawerRef.value.showLoading();
-  updateGoods(goodsId.value, form)
+  // 提交数据之前
+  let data = {
+    sku_type: form.sku_type,
+    sku_value: form.sku_value,
+  };
+  if (form.sku_type == 1) {
+    data.goodsSkus = sku_list.value;
+  }
+  updateGoods(goodsId.value, data)
     .then((res) => {
       toast("设置商品详情成功");
       formDrawerRef.value.close();

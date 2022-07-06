@@ -40,11 +40,36 @@
 
       <!-- 新增|刷新 -->
       <ListHeader
-        layout="create,delete,refresh"
+        layout="create,refresh"
         @create="handleCreate"
         @refresh="getData"
         @delete="handleMultiDelete"
       >
+        <el-button
+          size="small"
+          type="danger"
+          @click="handleMultiDelete"
+          v-if="searchForm.tab != 'delete'"
+          >批量删除</el-button
+        >
+        <el-button
+          type="warning"
+          size="small"
+          @click="handleRestoreGoods"
+          v-else
+          >恢复商品</el-button
+        >
+        <el-popconfirm
+          v-if="searchForm.tab == 'delete'"
+          title="是否要彻底删除该商品？"
+          confirmButtonText="确认"
+          cancelButtonText="取消"
+          @confirm="handleDestroyGoods"
+        >
+          <template #reference>
+            <el-button type="danger" size="small">彻底删除</el-button>
+          </template>
+        </el-popconfirm>
         <el-button
           size="small"
           @click="handleMultipleStatusChange(1)"
@@ -146,7 +171,12 @@
               >
               <el-button
                 class="px-1"
-                type="primary"
+                :type="
+                  (scope.row.sku_type == 0 && !scope.row.sku_value) ||
+                  (scope.row.sku_type == 1 && !scope.row.goods_skus.length)
+                    ? 'danger'
+                    : 'primary'
+                "
                 size="small"
                 text
                 @click="handleSetGoodsSkus(scope.row)"
@@ -178,7 +208,7 @@
                 title="是否要删除该商品？"
                 confirmButtonText="确认"
                 cancelButtonText="取消"
-                @confirm="handleDelete(scope.row.id)"
+                @confirm="handleDelete([scope.row.id])"
               >
                 <template #reference>
                   <el-button class="px-1" text type="primary" size="small"
@@ -313,10 +343,12 @@ import {
   createGoods,
   updateGoods,
   deleteGoods,
+  restoreGoods,
+  destroyGoods,
 } from "~/api/goods";
 import { getCategoryList } from "~/api/category";
-
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
+import { toast } from "~/composables/util.js";
 
 const {
   handleSelectionChange,
@@ -333,6 +365,8 @@ const {
   limit,
   getData,
   handleDelete,
+
+  multipleSelectionIds,
 } = useInitTable({
   searchForm: {
     title: "",
@@ -424,4 +458,32 @@ const handleSetGoodsContent = (row) => contentRef.value.open(row);
 // 设置商品规格
 const skusRef = ref(null);
 const handleSetGoodsSkus = (row) => skusRef.value.open(row);
+
+// 恢复商品
+const handleRestoreGoods = () => {
+  useMultipleAction(destroyGoods, "恢复成功");
+};
+
+// 彻底删除商品
+const handleDestroyGoods = () => {
+  useMultipleAction(destroyGoods, "彻底删除");
+};
+
+function useMultipleAction(func, msg) {
+  loading.value = true;
+  // console.log(multipleSelectionIds);
+  func(multipleSelectionIds.value)
+    .then((res) => {
+      toast(msg + "成功!");
+      // 清空选中 看文档
+      if (multipleTableRef.value) {
+        multipleTableRef.value.clearSelection();
+      }
+      // 刷新数据
+      getData();
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+}
 </script>
