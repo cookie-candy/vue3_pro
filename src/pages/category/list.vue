@@ -11,6 +11,15 @@
         <span>{{ data.name }}</span>
 
         <div class="ml-auto">
+          <el-button
+            text
+            type="primary"
+            size="small"
+            @click="openGoodsDrawer(data)"
+          >
+            推荐商品
+          </el-button>
+
           <el-switch
             :modelValue="data.status"
             :active-value="1"
@@ -59,12 +68,15 @@
         </el-form-item>
       </el-form>
     </FormDrawer>
+
+    <GoodsDrawer ref="GoodsDrawerRef" />
   </el-card>
 </template>
 
 <script setup>
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from "~/components/FormDrawer.vue";
+import GoodsDrawer from "./component/GoodsDrawer.vue";
 
 import { ref } from "vue";
 
@@ -116,6 +128,9 @@ const {
   update: updateCategory,
   create: createCategory,
 });
+
+const GoodsDrawerRef = ref(null);
+const openGoodsDrawer = (data) => GoodsDrawerRef.value.open(data);
 </script>
 
 <style scoped>
