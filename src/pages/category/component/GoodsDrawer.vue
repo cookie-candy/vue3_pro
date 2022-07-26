@@ -12,10 +12,21 @@
           ></el-image>
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="商品名称" />
+      <el-table-column prop="name" label="商品名称" width="180" />
       <el-table-column label="操作">
-        <template #default>
-          <el-button type="primary" text size="small">删除</el-button>
+        <template #default="{ row }">
+          <el-popconfirm
+            title="是否要删除该记录？"
+            confirmButtonText="确认"
+            cancelButtonText="取消"
+            @confirm="handleDelete(row)"
+          >
+            <template #reference>
+              <el-button text type="primary" size="small" :loading="row.loading"
+                >删除</el-button
+              >
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -25,8 +36,8 @@
 <script setup>
 import { ref } from "vue";
 import FormDrawer from "~/components/FormDrawer.vue";
-
-import { getCategoryGoods } from "~/api/category.js";
+import { getCategoryGoods, deleteCategoryGoods } from "~/api/category.js";
+import { toast } from "~/composables/util";
 
 const formDrawerRef = ref(null);
 const category_id = ref(0);
@@ -34,14 +45,30 @@ const tableData = ref([]);
 
 const open = (item) => {
   category_id.value = item.id;
-  getData().then((res) => formDrawerRef.value.open());
+  item.goodsDrawerLoading = true;
+  getData()
+    .then((res) => formDrawerRef.value.open())
+    .finally(() => {
+      item.goodsDrawerLoading = false;
+    });
 };
 
 function getData() {
-  return getCategoryGoods(category_id.value).then(
-    (res) => (tableData.value = res)
-  );
+  return getCategoryGoods(category_id.value).then((res) => {
+    tableData.value = res.map((o) => {
+      o.loading = false;
+      return o;
+    });
+  });
 }
+
+const handleDelete = (row) => {
+  row.loading = true;
+  deleteCategoryGoods(row.id).then((res) => {
+    toast("删除成功");
+    getData();
+  });
+};
 
 defineExpose({
   open,
