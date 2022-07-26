@@ -27,8 +27,8 @@ export function getManagerList(page, query = {}) {
 
 /**
  * 修改管理员状态
- * @param {管理员ID} id 
- * @param {是否启用：0禁用1启用} status 
+ * @param {Number} id 管理员ID
+ * @param {Number} status 是否启用：0禁用1启用
  * @returns 
  */
 export function updateManagerStatus(id, status) {

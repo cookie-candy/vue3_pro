@@ -8,8 +8,8 @@ export function getGoodsList(page, query = {}) {
 
 /**
  * 批量上架/下架商品
- * @param {ids数组 删除的id} ids 
- * @param {1:上架, 0:下架} status 
+ * @param {Number} ids ids数组 删除的id
+ * @param {Number} status 1:上架, 0:下架
  * @returns 
  */
 export function updateGoodsStatus(ids, status) {
