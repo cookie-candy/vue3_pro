@@ -4,8 +4,9 @@
     <ListHeader @create="handleCreate" @refresh="getData" />
 
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
-      <el-table-column prop="name" label="角色名称" />
-      <el-table-column prop="desc" label="角色描述" width="380" />
+      <el-table-column prop="name" label="会员等级" />
+      <el-table-column prop="discount" label="折扣率" align="center" />
+      <el-table-column prop="level" label="等级序号" align="center" />
       <el-table-column label="状态" width="120">
         <template #default="{ row }">
           <el-switch
@@ -69,15 +70,14 @@
         label-width="80px"
         :inline="false"
       >
-        <el-form-item label="角色名称" prop="name">
-          <el-input v-model="form.name" placeholder="角色名称"></el-input>
+        <el-form-item label="等级名称" prop="name">
+          <el-input v-model="form.name" placeholder="等级名称"></el-input>
         </el-form-item>
-        <el-form-item label="角色描述" prop="desc">
+        <el-form-item label="等级权重" prop="level">
           <el-input
-            v-model="form.desc"
-            placeholder="角色描述"
-            type="textarea"
-            :rows="5"
+            type="number"
+            v-model="form.level"
+            placeholder="等级权重"
           ></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="status">
@@ -87,6 +87,49 @@
             :inactive-value="0"
           >
           </el-switch>
+        </el-form-item>
+        <el-form-item label="升级条件" prop="status">
+          <div>
+            <small class="text-xs mr-2">累计消费满</small>
+            <el-input
+              type="number"
+              v-model="form.max_price"
+              placeholder="累计消费"
+              style="width: 50%"
+            >
+              <template #append>元</template>
+            </el-input>
+            <small class="text-gray-400 flex">
+              设置会员等级所需要的累计消费必须大于等于0,单位：元
+            </small>
+          </div>
+          <div>
+            <small class="text-xs mr-2">累计次数满</small>
+            <el-input
+              type="number"
+              v-model="form.max_times"
+              placeholder="累计次数"
+              style="width: 50%"
+            >
+              <template #append>%</template>
+            </el-input>
+            <small class="text-gray-400 flex">
+              设置会员等级所需要的购买量必须大于等于0,单位：笔
+            </small>
+          </div>
+        </el-form-item>
+        <el-form-item label="折扣率(%)" prop="discount">
+          <el-input
+            type="number"
+            v-model="form.discount"
+            placeholder="折扣率(%)"
+            style="width: 50%"
+          >
+            <template #append>%</template>
+          </el-input>
+          <small class="text-gray-400 flex">
+            折扣率单位为百分比，如输入90，表示该会员等级的用户可以以商品原价的90%购买
+          </small>
         </el-form-item>
       </el-form>
     </FormDrawer>
