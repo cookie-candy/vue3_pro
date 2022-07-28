@@ -32,7 +32,7 @@
     <ListHeader @create="handleCreate" @refresh="getData" />
 
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
-      <el-table-column label="管理员" width="200">
+      <el-table-column label="会员" width="200">
         <template #default="{ row }">
           <div class="flex items-center">
             <el-avatar :size="40" :src="row.avatar">
@@ -47,9 +47,15 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="所属角色" align="center">
+      <el-table-column label="会员等级" align="center">
         <template #default="{ row }">
-          {{ row.role?.name || "-" }}
+          {{ row.user_level?.name || "-" }}
+        </template>
+      </el-table-column>
+      <el-table-column label="登录注册" align="center">
+        <template #default="{ row }">
+          <p v-if="row.last_login_time">最后登录 : {{ row.last_login_time }}</p>
+          <p>注册时间 : {{ row.create_time }}</p>
         </template>
       </el-table-column>
       <el-table-column label="状态" width="120">
@@ -122,16 +128,22 @@
         <el-form-item label="头像" prop="avatar">
           <ChooseImage v-model="form.avatar" />
         </el-form-item>
-        <el-form-item label="所属角色" prop="role_id">
-          <el-select v-model="form.role_id" placeholder="选择所属角色">
+        <el-form-item label="会员等级" prop="user_level_id">
+          <el-select v-model="form.user_level_id" placeholder="选择会员等级">
             <el-option
-              v-for="item in roles"
+              v-for="item in user_level"
               :key="item.id"
               :label="item.name"
               :value="item.id"
             >
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="手机" prop="phone">
+          <el-input v-model="form.phone" placeholder="手机"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="form.email" placeholder="邮箱"></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="content">
           <el-switch
@@ -212,6 +224,10 @@ const {
     role_id: null,
     status: 1,
     avatar: "",
+    avatar: "",
+    nickname: "",
+    phone: "",
+    email: "",
   },
   getData,
   update: updateUser,
