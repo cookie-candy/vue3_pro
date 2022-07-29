@@ -56,7 +56,11 @@
       </Search>
 
       <!-- 新增|刷新 -->
-      <ListHeader layout="">
+      <ListHeader
+        layout="refresh,download"
+        @refresh="getData"
+        @download="handleExportExcel"
+      >
         <el-button type="danger" size="small" @click="handleMultiDelete"
           >批量删除</el-button
         >
@@ -190,16 +194,17 @@
           @current-change="getData"
         />
       </div>
+      <ExportExcel :tabs="tabbars" ref="ExportExcelRef" />
     </el-card>
   </div>
 </template>
 <script setup>
 import { ref } from "vue";
 import ListHeader from "~/components/ListHeader.vue";
-import FormDrawer from "~/components/FormDrawer.vue";
 import ChooseImage from "~/components/ChooseImage.vue";
 import Search from "~/components/Search.vue";
 import SearchItem from "~/components/SearchItem.vue";
+import ExportExcel from "./ExportExcel.vue";
 import { getOrderList, deleteOrder } from "~/api/order";
 
 import { useInitTable } from "~/composables/useCommon.js";
@@ -276,4 +281,7 @@ const tabbars = [
     name: "退款中",
   },
 ];
+
+const ExportExcelRef = ref(null);
+const handleExportExcel = () => ExportExcelRef.value.open();
 </script>
