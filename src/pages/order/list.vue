@@ -296,6 +296,16 @@ const handleExportExcel = () => ExportExcelRef.value.open();
 const InfoModalRef = ref(null);
 const info = ref(null);
 const openInfoModal = (row) => {
+  row.order_items = row.order_items.map((o) => {
+    if (o.skus_type == 1 && row.goods_skus) {
+      let s = [];
+      for (const k in o.goods_skus.skus) {
+        s.push(o.goods_skus.skus[k].value);
+      }
+      o.sku = s.join(",");
+    }
+    return o;
+  });
   info.value = row;
   InfoModalRef.value.open();
 };

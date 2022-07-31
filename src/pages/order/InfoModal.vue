@@ -4,7 +4,7 @@
       <template #header>
         <b class="text-sm">订单详情</b>
       </template>
-      <el-form label-width="80px">
+      <el-form>
         <el-form-item label="订单号">
           {{ info.no }}
         </el-form-item>
@@ -16,6 +16,23 @@
         </el-form-item>
         <el-form-item label="创建时间">
           {{ info.create_time }}
+        </el-form-item>
+      </el-form>
+    </el-card>
+
+    <el-card v-if="info.ship_data" shadow="never" class="mb-3">
+      <template #header>
+        <b class="text-sm">发货信息</b>
+      </template>
+      <el-form label-width="80px">
+        <el-form-item label="物流公司">
+          {{ info.ship_data.express_company }}
+        </el-form-item>
+        <el-form-item label="运单号">
+          {{ info.ship_data.express_no }}
+        </el-form-item>
+        <el-form-item label="发货时间">
+          {{ ship_time }}
         </el-form-item>
       </el-form>
     </el-card>
@@ -37,9 +54,9 @@
         ></el-image>
         <div class="ml-2 text-sm">
           <p>{{ item.goods_item?.title ?? "商品已被删除" }}</p>
-          <p v-if="item.sku_type == 1 && item.goods_skus" class="mt-1">
+          <p v-if="item.skus" class="mt-1">
             <el-tag type="info" size="small">
-              {{ item.goods_skus.skus.map((o) => o.value).join(",") }}
+              {{ item.skus }}
             </el-tag>
           </p>
           <p>
@@ -71,13 +88,53 @@
         </el-form-item>
       </el-form>
     </el-card>
+
+    <el-card v-if="info.ship_data" shadow="never" class="mb-3">
+      <template #header>
+        <b class="text-sm">发货信息</b>
+      </template>
+      <el-form label-width="80px">
+        <el-form-item label="物流公司">
+          {{ info.ship_data.express_company }}
+        </el-form-item>
+        <el-form-item label="运单号">
+          {{ info.ship_data.express_no }}
+        </el-form-item>
+        <el-form-item label="发货时间">
+          {{ ship_time }}
+        </el-form-item>
+      </el-form>
+    </el-card>
   </el-drawer>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { useDateFormat } from "@vueuse/core";
 
 const props = defineProps({
   info: Object,
+});
+
+const ship_data_time = computed(() => {
+  if (props.info.ship_data) {
+    const s = useDateFormat(
+      props.info.ship_data.express_time * 1000,
+      "yyyy-MM-dd HH:mm:ss"
+    );
+    return s.value;
+  }
+  return "";
+});
+
+const refund_states = computed(() => {
+  const opt = {
+    pending: "未退款",
+    applied: "已申请，等待审核",
+    processing: "退款中",
+    success: "退款成功",
+    failed: "退款失败",
+  };
+  return props.info.refund_states ? opt[props.info.refund_states] : "";
 });
 
 const dialogVisible = ref(false);
