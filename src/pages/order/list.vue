@@ -175,6 +175,7 @@
               type="primary"
               size="small"
               text
+              @click="handleRefund(row.id, 1)"
               >同意退款</el-button
             >
             <el-button
@@ -183,6 +184,7 @@
               type="primary"
               size="small"
               text
+              @click="handleRefund(row.id, 0)"
               >拒绝退款</el-button
             >
           </template>
@@ -213,7 +215,8 @@ import Search from "~/components/Search.vue";
 import SearchItem from "~/components/SearchItem.vue";
 import ExportExcel from "./ExportExcel.vue";
 import InfoModal from "./InfoModal.vue";
-import { getOrderList, deleteOrder } from "~/api/order";
+import { getOrderList, deleteOrder, refundOrder } from "~/api/order";
+import { showModal, showPrompt, toast } from "~/composables/util";
 
 import { useInitTable } from "~/composables/useCommon.js";
 
@@ -308,5 +311,22 @@ const openInfoModal = (row) => {
   });
   info.value = row;
   InfoModalRef.value.open();
+};
+
+// 退款处理
+const handleRefund = (id, agree) => {
+  (agree
+    ? showModal("是否要同意该订单退款?")
+    : showPrompt("请输入拒绝的理由")
+  ).then(({ value }) => {
+    let data = { agree };
+    if (!agree) {
+      data.disagree_reason = value;
+    }
+    refundOrder(id, data).then((res) => {
+      getData();
+      toast("操作成功");
+    });
+  });
 };
 </script>
