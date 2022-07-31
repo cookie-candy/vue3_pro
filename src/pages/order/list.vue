@@ -152,8 +152,13 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center">
-          <template #default>
-            <el-button class="px-1" type="primary" size="small" text
+          <template #default="{ row }">
+            <el-button
+              class="px-1"
+              type="primary"
+              size="small"
+              text
+              @click="openInfoModal(row)"
               >订单详情</el-button
             >
             <el-button
@@ -195,6 +200,8 @@
         />
       </div>
       <ExportExcel :tabs="tabbars" ref="ExportExcelRef" />
+
+      <InfoModal ref="InfoModalRef" :info="info" />
     </el-card>
   </div>
 </template>
@@ -205,6 +212,7 @@ import ChooseImage from "~/components/ChooseImage.vue";
 import Search from "~/components/Search.vue";
 import SearchItem from "~/components/SearchItem.vue";
 import ExportExcel from "./ExportExcel.vue";
+import InfoModal from "./InfoModal.vue";
 import { getOrderList, deleteOrder } from "~/api/order";
 
 import { useInitTable } from "~/composables/useCommon.js";
@@ -284,4 +292,21 @@ const tabbars = [
 
 const ExportExcelRef = ref(null);
 const handleExportExcel = () => ExportExcelRef.value.open();
+
+const InfoModalRef = ref(null);
+const info = ref(null);
+const openInfoModal = (row) => {
+  row.order_items = row.order_items.map((o) => {
+    if (o.skus_type == 1 && o.goods_skus) {
+      let s = [];
+      for (const k in o.goods_skus.skus) {
+        s.push(o.goods_skus.skus[k].value);
+      }
+      o.sku = s.join(",");
+    }
+    return o;
+  });
+  info.value = row;
+  InfoModalRef.value.open();
+};
 </script>
