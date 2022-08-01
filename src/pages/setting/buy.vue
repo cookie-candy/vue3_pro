@@ -24,8 +24,14 @@
               </template>
             </el-table-column>
             <el-table-column label="操作" align="center" width="150">
-              <template #default="{}">
-                <el-button type="primary" size="small" text>配置</el-button>
+              <template #default="{ row }">
+                <el-button
+                  type="primary"
+                  size="small"
+                  text
+                  @click="open(row.key)"
+                  >配置</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -59,13 +65,129 @@
         </el-tab-pane>
       </el-tabs>
     </el-form>
+
+    <FormDrawer ref="formDrawerRef" title="配置" @submit="submit">
+      <el-form v-if="drawerType == 'alipay'" :model="form" label-width="80px">
+        <el-form-item label="app_id">
+          <el-input
+            v-model="form.alipay.app_id"
+            placeholder="app_id"
+            style="width: 90%"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="ali_public_key">
+          <el-input
+            v-model="form.alipay.ali_public_key"
+            placeholder="ali_public_key"
+            style="width: 90%"
+            type="textarea"
+            rows="4"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="private_key">
+          <el-input
+            v-model="form.alipay.private_key"
+            placeholder="private_key"
+            style="width: 90%"
+            type="textarea"
+            rows="4"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <el-form v-else :model="form" label-width="80px">
+        <el-form-item label="公众号 APPID">
+          <el-input
+            v-model="form.wxpay.app_id"
+            placeholder="app_id"
+            style="width: 90%"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="小程序 APPID">
+          <el-input
+            v-model="form.wxpay.miniapp_id"
+            placeholder="miniapp_id"
+            style="width: 90%"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="小程序 secret">
+          <el-input
+            v-model="form.wxpay.secret"
+            placeholder="secret"
+            style="width: 90%"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="appid">
+          <el-input
+            v-model="form.wxpay.appid"
+            placeholder="appid"
+            style="width: 90%"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="商户号">
+          <el-input
+            v-model="form.wxpay.mch_id"
+            placeholder="商户号"
+            style="width: 90%"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="API 密钥">
+          <el-input
+            v-model="form.wxpay.key"
+            placeholder="API 密钥"
+            style="width: 90%"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="cert_client">
+          <el-upload
+            :action="uploadAction"
+            :headers="{
+              token,
+            }"
+            accept=".pem"
+            :limit="1"
+            :on-success="uploadClientSuccess"
+          >
+            <el-button type="primary">点击上传</el-button>
+            <template #tip>
+              <p class="text-red-500">
+                {{
+                  form.wxpay.cert_client ? form.wxpay.cert_client : "还未配置"
+                }}
+              </p>
+              <div class="el-upload__tip">例如：apiclient_cert.pem</div>
+            </template>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="cert_key">
+          <el-upload
+            :action="uploadAction"
+            :headers="{
+              token,
+            }"
+            accept=".pem"
+            :limit="1"
+            :on-success="uploadKeySuccess"
+          >
+            <el-button type="primary">点击上传</el-button>
+            <template #tip>
+              <p class="text-red-500">
+                {{ form.wxpay.cert_key ? form.wxpay.cert_key : "还未配置" }}
+              </p>
+              <div class="el-upload__tip">例如：apiclient_key.pem</div>
+            </template>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+    </FormDrawer>
   </div>
 </template>
 <script setup>
 import { ref, reactive } from "vue";
-import { getSysconfig, setSysconfig } from "~/api/sysconfig";
-import { toast } from "../../composables/util";
-
+import { getSysconfig, setSysconfig, uploadAction } from "~/api/sysconfig";
+import { toast } from "~/composables/util";
+import { getToken } from "~/composables/auth";
+import FormDrawer from "~/components/FormDrawer.vue";
+const token = getToken();
 const activeName = ref("first");
 const tableData = [
   {
@@ -110,7 +232,6 @@ function getData() {
       for (const k in form) {
         form[k] = res[k];
       }
-      console.log(form.password_encrypt);
       form.password_encrypt = form.password_encrypt.split(",");
     })
     .finally(() => {
@@ -133,4 +254,19 @@ const submit = () => {
       loading.value = false;
     });
 };
+
+const drawerType = ref("alipay");
+const formDrawerRef = ref(null);
+const open = (key) => {
+  drawerType.value = key;
+  formDrawerRef.value.open();
+};
+
+function uploadClientSuccess(response, uploadFile, uploadFiles) {
+  form.wxpay.cert_client = response.data;
+}
+
+function uploadKeySuccess(response, uploadFile, uploadFiles) {
+  form.wxpay.cert_key = response.data;
+}
 </script>
