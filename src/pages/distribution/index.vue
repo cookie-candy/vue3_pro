@@ -88,9 +88,21 @@
           align="center"
         />
         <el-table-column fixed="right" label="操作" width="180" align="center">
-          <template #default>
-            <el-button type="primary" size="small" text>推广人</el-button>
-            <el-button type="primary" size="small" text>推广订单</el-button>
+          <template #default="{ row }">
+            <el-button
+              type="primary"
+              size="small"
+              text
+              @click="openDataDrawer(row.id, 'user')"
+              >推广人</el-button
+            >
+            <el-button
+              type="primary"
+              size="small"
+              text
+              @click="openDataDrawer(row.id, 'order')"
+              >推广订单</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -106,16 +118,18 @@
         />
       </div>
     </el-card>
+
+    <dataDrawer ref="dataDrawerRef" />
+    <dataDrawer ref="orderDataDrawerRef" type="order" />
   </div>
 </template>
 <script setup>
 import panel from "./panel.vue";
+import dataDrawer from "./dataDrawer.vue";
 import { ref } from "vue";
 import Search from "~/components/Search.vue";
 import SearchItem from "~/components/SearchItem.vue";
-
 import { getAgentList } from "~/api/distribution";
-
 import { useInitTable } from "~/composables/useCommon.js";
 
 const {
@@ -140,4 +154,10 @@ const {
     total.value = res.totalCount;
   },
 });
+
+const dataDrawerRef = ref(null);
+const orderDataDrawerRef = ref(null);
+const openDataDrawer = (id, type) => {
+  (type == "user" ? dataDrawerRef : orderDataDrawerRef).value.open(id);
+};
 </script>
