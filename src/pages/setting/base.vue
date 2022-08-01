@@ -2,7 +2,7 @@
   <div v-loading="loading" class="bg-white p-4 rounded">
     <el-form :model="form" label-width="160px">
       <el-tabs v-model="activeName">
-        <el-tab-pane label="注册与访问" name="first">
+        <el-tab-pane label="支付设置" name="first">
           <el-form-item label="是否允许注册会员">
             <el-radio-group v-model="form.open_reg">
               <el-radio :label="0" border> 关闭 </el-radio>
@@ -32,11 +32,70 @@
             </el-checkbox-group>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane label="上传设置" name="second"> </el-tab-pane>
-        <el-tab-pane label="Api安全" name="third"> </el-tab-pane>
+        <el-tab-pane label="上传设置" name="second">
+          <el-form-item label="默认上传方式">
+            <el-radio-group v-model="form.upload_method">
+              <el-radio label="oss" border> 对象存储 </el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="Bucket">
+            <el-input
+              v-model="form.upload_config.Bucket"
+              placeholder="Bucket"
+              style="width: 30%"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="ACCESS_KEY">
+            <el-input
+              v-model="form.upload_config.ACCESS_KEY"
+              placeholder="ACCESS_KEY"
+              style="width: 30%"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="SECRET_KEY">
+            <el-input
+              v-model="form.upload_config.SECRET_KEY"
+              placeholder="SECRET_KEY"
+              style="width: 30%"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="空间域名">
+            <el-input
+              v-model="form.upload_config.http"
+              placeholder="空间域名"
+              style="width: 30%"
+            ></el-input>
+            <small class="text-gray-500 flex mt-1"
+              >请补全 http:// 或 https://</small
+            >
+          </el-form-item>
+        </el-tab-pane>
+        <el-tab-pane label="Api安全" name="third">
+          <el-form-item label="是否开启API安全">
+            <el-radio-group v-model="form.api_safe">
+              <el-radio :label="0" border> 关闭 </el-radio>
+              <el-radio :label="1" border> 开启 </el-radio>
+            </el-radio-group>
+            <small class="text-gray-500 flex mt-1"
+              >api安全功能开启之后调用前端api需要传输签名串</small
+            >
+          </el-form-item>
+          <el-form-item label="秘钥">
+            <el-input
+              v-model="form.api_secret"
+              placeholder="秘钥"
+              style="width: 30%"
+            ></el-input>
+            <small class="text-gray-500 flex mt-1"
+              >秘钥设置关系系统中api调用传输签名串的编码规则，以及会员token解析，请慎重设置，注意设置之后对应会员要求重新登录获取token</small
+            >
+          </el-form-item>
+        </el-tab-pane>
       </el-tabs>
       <el-form-item>
-        <el-button type="primary" size="default">保存</el-button>
+        <el-button type="primary" size="default" @click="submit"
+          >保存</el-button
+        >
       </el-form-item>
     </el-form>
   </div>
