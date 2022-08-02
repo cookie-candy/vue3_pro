@@ -129,7 +129,9 @@ import dataDrawer from "./dataDrawer.vue";
 import { ref } from "vue";
 import Search from "~/components/Search.vue";
 import SearchItem from "~/components/SearchItem.vue";
+
 import { getAgentList } from "~/api/distribution";
+
 import { useInitTable } from "~/composables/useCommon.js";
 
 const {

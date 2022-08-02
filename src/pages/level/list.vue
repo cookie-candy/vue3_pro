@@ -26,19 +26,12 @@
             type="primary"
             size="small"
             text
-            @click="openSetRule(scope.row)"
-            >配置权限</el-button
-          >
-          <el-button
-            type="primary"
-            size="small"
-            text
             @click="handleEdit(scope.row)"
             >修改</el-button
           >
 
           <el-popconfirm
-            title="是否要删除该公告？"
+            title="是否要删除该记录？"
             confirmButtonText="确认"
             cancelButtonText="取消"
             @confirm="handleDelete(scope.row.id)"
@@ -88,7 +81,7 @@
           >
           </el-switch>
         </el-form-item>
-        <el-form-item label="升级条件" prop="status">
+        <el-form-item label="升级条件">
           <div>
             <small class="text-xs mr-2">累计消费满</small>
             <el-input
@@ -136,7 +129,6 @@
   </el-card>
 </template>
 <script setup>
-import { ref } from "vue";
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from "~/components/FormDrawer.vue";
 import {
